@@ -1,15 +1,10 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Redis;
-using Newtonsoft.Json;
-using ThrottleService.Resources;
 using ThrottleService.Helpers;
+using ThrottleService.Resources;
 
 namespace ThrottleService.Controllers
 {
@@ -27,7 +22,7 @@ namespace ThrottleService.Controllers
         [HttpGet]
         public IEnumerable<Rule> Get()
         {
-            var rules = _cache.CacheGet<IEnumerable<Rule>>("Rules");
+            var rules = _cache.CacheGetList<Rule>("Rules");
             return rules.ToArray();
         }
 
@@ -45,7 +40,7 @@ namespace ThrottleService.Controllers
         [HttpPost]
         public async Task<ActionResult<Rule>> Post(Rule rule)
         {
-            var rules = (await _cache.CacheGetAsync<IEnumerable<Rule>>("Rules")).ToList();
+            var rules = (await _cache.CacheGetListAsync<Rule>("Rules")).ToList();
             rules.Add(rule);
             await _cache.CacheSaveAsync("Rules", rules.ToArray());
             return CreatedAtAction(nameof(Get), new { id = rule.Id }, rule);

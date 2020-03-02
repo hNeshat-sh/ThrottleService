@@ -9,5 +9,6 @@ namespace ThrottleService.Resources
     {
         public string Url { get; set; }
         public string IP { get; set; }
+        public DateTime DateTimeReceived { get; set; }
     }
 }

@@ -14,8 +14,8 @@ namespace ThrottleService.Resources
 
     public enum LimitType : int
     {
-        TenPerSecond,
-        FiftyPerMinute,
-        HundredPerHours
+        TenPerSecond = 1,
+        FiftyPerMinute = 2,
+        HundredPerHours = 3
     }
 }

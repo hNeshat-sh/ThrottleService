@@ -1,19 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web.Http.Controllers;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Caching.Distributed;
 using ThrottleService.Resources;
 
 namespace ThrottleService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ThrottleController : ControllerBase
+    public class ThrottleController : ControllerBase, IThrottleController
     {
+        public readonly IDistributedCache _cache;
+        IDistributedCache IThrottleController.Cache => _cache;
+        public ThrottleController(IDistributedCache distributedCache)
+        {
+            _cache = distributedCache;
+        }
+
         // GET: api/Throttle
         [HttpGet]
         [Throttle]
@@ -22,7 +24,6 @@ namespace ThrottleService.Controllers
             //Do something ...
             return Ok();
         }
-
     }
 
     public class MySampleActionFilter : IActionFilter
@@ -40,19 +41,6 @@ namespace ThrottleService.Controllers
         }
     }
 
-    public class ThrottleAttribute : ActionFilterAttribute
-    {
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            object log;
-            context.ActionArguments.TryGetValue("log", out log);
-            if (log != null)
-            {
-                context.Result = new BadRequestObjectResult(context.ModelState);
-            }
-
-            // Do various logic to determine if we should respond with a 429
-        }
-    }
+  
 
 }
